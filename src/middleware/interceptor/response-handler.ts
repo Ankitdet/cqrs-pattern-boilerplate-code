@@ -10,12 +10,15 @@ import { GenericErrorResponse } from "../../core-common/response-model/generic-e
 import { GenericSuccessResponse } from "../../core-common/response-model/generic-success-response.model";
 import { Result } from "../../core-common/result-model/result";
 import { HttpResponseFormatter } from "../utils/http-response.formatter";
+import { LoggerService } from "@core-common/logger";
 /**
  * Intercepts the response and returns a standard ApiReponse object
  */
 @Injectable()
 export class ResponseHandler implements NestInterceptor {
-  constructor() {}
+  constructor(
+    private readonly logger: LoggerService
+  ) {}
 
   intercept(exContext: ExecutionContext, next: CallHandler): Observable<any> {
     return new Observable((subscriber) => {
@@ -25,6 +28,7 @@ export class ResponseHandler implements NestInterceptor {
           subscriber.next(mapped);
         },
         error: (err) => {
+          this.logger.error('Error in ResponseHandler Interceptor', err);
           subscriber.error(err);
         },
         complete: () => {

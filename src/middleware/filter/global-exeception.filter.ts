@@ -3,7 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  HttpStatus
+  HttpStatus,
 } from "@nestjs/common";
 import { Response } from "express";
 import { GenericError } from "../../core-common/error";
@@ -73,9 +73,9 @@ export class GlobalExceptionHandler implements ExceptionFilter {
             validationError: validationErrors.validationErrors,
           },
           timestamp: new Date().toISOString(),
-        });   
+        });
       }
-      
+
       return response.status(status).json({
         statusCode: status,
         success: false,

@@ -1,14 +1,14 @@
 require("module-alias/register");
 import { BASE_URL, PORT } from "@core-common/constant/app.constant";
+import { LoggerService } from "@core-common/logger";
+import { GlobalExceptionHandler } from "@middleware/filter/global-exeception.filter";
+import { ResponseHandler } from "@middleware/interceptor/response-handler";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { json } from "body-parser";
 import { urlencoded } from "express";
-import { LoggerService } from "@core-common/logger";
 import { MainModule } from "./main.module";
-import { GlobalExceptionHandler } from "@middleware/filter/global-exeception.filter";
-import { ResponseHandler } from "@middleware/interceptor/response-handler";
 
 let logger: LoggerService;
 async function bootstrap() {
@@ -32,7 +32,7 @@ async function bootstrap() {
 
   setupValidationPipe(app);
 
-  app.useGlobalInterceptors(new ResponseHandler());
+  app.useGlobalInterceptors(new ResponseHandler(logger));
 
   app.useGlobalFilters(new GlobalExceptionHandler());
 
