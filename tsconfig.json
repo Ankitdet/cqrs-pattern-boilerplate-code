@@ -1,0 +1,57 @@
+{
+    "compilerOptions": {
+        /* Language & Environment */
+        "target": "es2024",
+        "lib": [
+            "es2024"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "types": [
+            "node"
+        ],
+        /* Output */
+        "outDir": "./dist",
+        "declaration": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "incremental": true,
+        /* Decorators (NestJS) */
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        /* Module Interop */
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        /* Base Paths */
+        "baseUrl": ".",
+        "paths": {
+            "@routes/*": [
+                "src/routes/*"
+            ],
+            "@core-common/*": [
+                "src/core-common/*"
+            ],
+            "@common-infra/*": [
+                "src/common-infra/*"
+            ],
+            "@middleware/*": [
+                "src/middleware/*"
+            ]
+        },
+        /* Type Safety (non-strict by design) */
+        "strict": false,
+        "strictNullChecks": false,
+        "strictPropertyInitialization": false,
+        "noImplicitAny": false,
+        "noImplicitReturns": false,
+        "strictBindCallApply": true,
+        /* Code Quality */
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        /* Performance */
+        "skipLibCheck": true
+    }
+}
