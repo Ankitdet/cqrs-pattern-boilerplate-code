@@ -4,13 +4,14 @@ import { MulterModule } from "@nestjs/platform-express";
 import { RequestContextModule } from "nestjs-request-context";
 import { LoggerModule } from "./core-common/logger/logger.module";
 import { HealthCheckModule } from "./routes/health/health-check.module";
+import { CommonInfraModule } from "./common-infra/common-infra.module";
 
 export const coreModules = [
   ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: ".env",
   }),
-  // DBModule,
+  CommonInfraModule,
   MulterModule.register({
     dest: "./uploads",
   }),
