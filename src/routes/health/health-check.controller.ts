@@ -1,7 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post } from "@nestjs/common";
-import { Result } from "@core-common/result-model/result";
-import { HealthRequest } from "./health.request";
 import { GenericError } from "@core-common/error";
+import { Result } from "@core-common/result-model/result";
+import { Body, Controller, Get, HttpStatus, Post } from "@nestjs/common";
+import { HealthCheckError } from "./error/health-check.error";
+import { HealthRequest } from "./health.request";
 
 @Controller("health")
 export class HealthController {
@@ -12,14 +13,7 @@ export class HealthController {
 
   @Get("/test")
   public errorHandling(): Result<string> {
-    return Result.failed(
-      new GenericError(
-        "HEALTH_CHECK_ERROR",
-        "Health check failed",
-        HttpStatus.BAD_REQUEST,
-      ),
-      "ERROR",
-    );
+    return Result.failed(new HealthCheckError());
   }
 
   @Get("/throw-exception")

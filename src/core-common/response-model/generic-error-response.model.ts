@@ -19,7 +19,7 @@ export class GenericErrorResponse {
   data: any;
 
   constructor() {
-    this.statusCode = 400; // Default value
+    this.statusCode = 500; // Default value
     this.success = false;
     this.timestamp = new Date().toISOString(); // Default value
   }

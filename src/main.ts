@@ -1,14 +1,16 @@
 require("module-alias/register");
+import { BASE_URL, PORT } from "@core-common/constant/app.constant";
 import { HttpStatus, INestApplication, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { json } from "body-parser";
 import { urlencoded } from "express";
+import { LoggerService } from "@core-common/logger";
 import { MainModule } from "./main.module";
-import { GlobalExceptionHandler } from "./middleware/filter/global-exeception.handler";
-import { ResponseHandler } from "./middleware/interceptor/response-handler";
-import { BASE_URL, PORT } from "@core-common/constant/app.constant";
+import { GlobalExceptionHandler } from "@middleware/filter/global-exeception.handler";
+import { ResponseHandler } from "@middleware/interceptor/response-handler";
 
+let logger: LoggerService;
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(MainModule, {
     bodyParser: true,
@@ -17,7 +19,10 @@ async function bootstrap() {
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
       credentials: true,
     },
+    logger
   });
+
+  logger = app.get(LoggerService);
 
   app.setGlobalPrefix(BASE_URL);
 
@@ -38,17 +43,17 @@ async function bootstrap() {
 
 process
   .on("unhandledRejection", (reason, p) => {
-    console.error(reason, "Unhandled Rejection at Promise", p);
+    logger.error(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`);
   })
   .on("uncaughtException", (err) => {
-    console.error(err, "Uncaught Exception thrown");
+    logger.error(`Uncaught Exception thrown: ${err.message}`, {}, err);
     process.exit(1);
   });
 
 bootstrap()
   .then(async () => {})
   .catch((err) => {
-    console.error(
+    logger.error(
       `App initilization failed due to, ${JSON.stringify(err, null, 2)}`,
     );
   });

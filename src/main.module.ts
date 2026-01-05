@@ -5,7 +5,7 @@ import {
   NestModule,
   OnModuleInit,
 } from "@nestjs/common";
-import { modules } from "./import-module";
+import { modules } from "./module.index";
 
 @Global()
 @Module({
