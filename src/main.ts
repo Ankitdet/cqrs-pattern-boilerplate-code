@@ -7,7 +7,7 @@ import { json } from "body-parser";
 import { urlencoded } from "express";
 import { LoggerService } from "@core-common/logger";
 import { MainModule } from "./main.module";
-import { GlobalExceptionHandler } from "@middleware/filter/global-exeception.handler";
+import { GlobalExceptionHandler } from "@middleware/filter/global-exeception.filter";
 import { ResponseHandler } from "@middleware/interceptor/response-handler";
 
 let logger: LoggerService;
