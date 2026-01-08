@@ -6,27 +6,26 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { Response } from "express";
-import { GenericError } from "../../core-common/error";
-import { CustomValidationError } from "../../core-common/error/custom-error/custom-validation-error";
 import { Result } from "../../core-common/result-model/result";
+import { GenericError } from "../../core-common/error/generic.error";
+import { ValidationError } from "../../core-common/error/custom-error/validation.error";
+
 
 /**
- * Handles and processes  exceptions, providing standardized error responses.
- * This global exception handler can be used to catch and respond to exceptions thrown
- * during HTTP requests and format responses accordingly.
+ * Global exception filter for NestJS applications.
+ * Provides standardized error responses across the application.
  */
-
 @Catch()
-export class GlobalExceptionHandler implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
 
-    /* 1️⃣ Domain Result (highest priority) */
+    /* 1️⃣ Domain Result errors */
     if (exception instanceof Result) {
       const statusCode =
         exception.error?.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
-      const payload: any = {
+      const payload: Record<string, any> = {
         statusCode,
         success: false,
         error: {
@@ -40,12 +39,13 @@ export class GlobalExceptionHandler implements ExceptionFilter {
         payload.data = exception.data;
       }
 
-      return response.status(statusCode).json(payload);
+      response.status(statusCode).json(payload);
+      return;
     }
 
     /* 2️⃣ Custom domain errors */
     if (exception instanceof GenericError) {
-      return response.status(exception.statusCode).json({
+      response.status(exception.statusCode).json({
         statusCode: exception.statusCode,
         success: false,
         error: {
@@ -54,29 +54,37 @@ export class GlobalExceptionHandler implements ExceptionFilter {
         },
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
-    /* 3️⃣ NestJS HTTP exceptions */
+    /* 3️⃣ NestJS HttpExceptions */
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
 
-      const isValidationPipeError = exception.stack?.includes("ValidationPipe");
+      const isValidationPipeError =
+        typeof exception.stack === "string" &&
+        exception.stack.includes("ValidationPipe");
 
       if (isValidationPipeError) {
-        const validationErrors = new CustomValidationError(res);
-        return response.status(validationErrors.statusCode).json({
+        const validationError = new ValidationError(
+          "validation_error",
+          "Validation failed",
+        );
+
+        response.status(validationError.statusCode).json({
           success: false,
           error: {
-            code: validationErrors.code,
-            message: validationErrors.message,
-            validationError: validationErrors.validationErrors,
+            code: validationError.code,
+            message: validationError.message,
+            validationError,
           },
           timestamp: new Date().toISOString(),
         });
+        return;
       }
 
-      return response.status(status).json({
+      response.status(status).json({
         statusCode: status,
         success: false,
         error: {
@@ -84,15 +92,16 @@ export class GlobalExceptionHandler implements ExceptionFilter {
           message:
             typeof res === "string"
               ? res
-              : ((res as any).message ?? exception.message),
+              : (res as any)?.message ?? exception.message,
         },
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
-    /* 4️⃣ Native JS errors (TypeError, Error, etc.) */
+    /* 4️⃣ Native JS Errors */
     if (exception instanceof Error) {
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         success: false,
         error: {
@@ -101,10 +110,11 @@ export class GlobalExceptionHandler implements ExceptionFilter {
         },
         timestamp: new Date().toISOString(),
       });
+      return;
     }
 
-    /* 5️⃣ Truly unknown (non-Error throwables) */
-    return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    /* 5️⃣ Unknown throwables */
+    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       success: false,
       error: {

@@ -1,9 +1,19 @@
-import { Module } from "@nestjs/common";
+// src/core-common.module.ts
+import { DynamicModule, Global, Module } from "@nestjs/common";
+import { LoggerModule } from "./logger/logger.module";
 
-@Module({
-  providers: [
-  ],
-  exports: [
-  ],
-})
-export class CoreCommonModule {}
+@Global()
+@Module({})
+export class CoreCommonModule {
+  static forRoot(): DynamicModule {
+    return {
+      module: CoreCommonModule,
+      imports: [
+        LoggerModule.forRoot(),
+      ],
+      exports: [
+        LoggerModule,
+      ],
+    };
+  }
+}

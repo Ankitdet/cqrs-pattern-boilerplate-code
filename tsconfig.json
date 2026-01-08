@@ -25,20 +25,6 @@
         "resolveJsonModule": true,
         /* Base Paths */
         "baseUrl": ".",
-        "paths": {
-            "@routes/*": [
-                "src/routes/*"
-            ],
-            "@core-common/*": [
-                "src/core-common/*"
-            ],
-            "@common-infra/*": [
-                "src/common-infra/*"
-            ],
-            "@middleware/*": [
-                "src/middleware/*"
-            ]
-        },
         /* Type Safety (non-strict by design) */
         "strict": false,
         "strictNullChecks": false,

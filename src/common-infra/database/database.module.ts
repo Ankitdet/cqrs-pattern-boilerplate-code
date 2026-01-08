@@ -1,15 +1,32 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { DynamicModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { DBModuleOptions } from "./abstraction/db-module.options";
 import { typeOrmConfig } from "./typeorm.config";
 
-@Module({
-  imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: typeOrmConfig,
-    }),
-  ],
-})
-export class DBModule {}
+@Module({})
+export class DBModule {
+  static forRoot(options: DBModuleOptions = {}): DynamicModule {
+    const {
+      useConfigService = true,
+      typeOrmOptions = {},
+    } = options;
+
+    return {
+      module: DBModule,
+      imports: [
+        TypeOrmModule.forRootAsync({
+          inject: useConfigService ? [ConfigService] : [],
+          imports: useConfigService ? [ConfigModule] : [],
+          useFactory: async (configService?: ConfigService) => ({
+            ...(useConfigService
+              ? typeOrmConfig(configService!)
+              : {}),
+            ...typeOrmOptions,
+          }) as TypeOrmModuleOptions,
+        }),
+      ],
+      exports: [TypeOrmModule],
+    };
+  }
+}
