@@ -4,13 +4,11 @@ import {
     Injectable,
     NestInterceptor,
 } from "@nestjs/common";
-import {
-    GenericErrorResponse,
-    GenericSuccessResponse,
-    Result
-} from "cqrs-boilerplate-code";
 import { ServerResponse } from "http";
 import { Observable, map } from "rxjs";
+import { GenericErrorResponse } from "../../core-common/response-model/generic-error-response.model";
+import { GenericSuccessResponse } from "../../core-common/response-model/generic-success-response.model";
+import { Result } from "../../core-common/result-model/result";
 import { HttpResponseFormatter } from "../utils/http-response.formatter";
 
 @Injectable()

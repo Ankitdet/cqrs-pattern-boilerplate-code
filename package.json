@@ -1,6 +1,6 @@
 {
   "name": "cqrs-boilerplate-common",
-  "version": "1.0.28",
+  "version": "1.1.1",
   "description": "Cqrs boilerplate common library",
   "private": false,
   "license": "MIT",
@@ -33,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ankitdetroja/cqrs-boilerplate-common"
+    "url": "https://github.com/Ankitdet/cqrs-pattern-boilerplate-code"
   },
   "keywords": [
     "nestjs",
@@ -48,7 +48,7 @@
     "middleware",
     "typescript"
   ],
-  "homepage": "https://github.com/ankitdetroja/cqrs-boilerplate-common#readme",
+  "homepage": "https://github.com/Ankitdet/cqrs-pattern-boilerplate-code#readme",
   "bugs": {
     "url": "https://github.com/ankitdetroja/cqrs-boilerplate-common/issues"
   },

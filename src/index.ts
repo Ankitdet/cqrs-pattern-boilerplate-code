@@ -27,6 +27,8 @@ export * from './core-common/logger/logger.service'
 
 // Module Exports
 export * from './common-infra/common-infra.module'
+export * from './common-infra/database/database.module'
+export * from './common-infra/http/http.module'
 export * from './common-infra/database/typeorm.config'
 export * from './core-common/constant/app.constant'
 export * from './core-common/core-common.module'
