@@ -1,5 +1,5 @@
 import winston, { Logger } from "winston";
-
+import stripAnsi from "strip-ansi";
 /* ---------------------------------- Types --------------------------------- */
 
 enum SeverityText {
@@ -80,15 +80,17 @@ export class LoggerService {
       level,
       levels: winston.config.npm.levels,
       format: winston.format.combine(
+        winston.format.uncolorize(),
         winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        winston.format.json(),
         winston.format.printf(({ level, message, timestamp, ...meta }) =>
           JSON.stringify({
-            message: this.safeStringify(message),
+            message: stripAnsi(this.safeStringify(message)),
             attributes: this.buildAttributes(level),
             timestamp: timestamp,
             ...this.cleanMeta(meta),
-          }),
-        ),
+          })
+        )
       ),
       transports: [new winston.transports.Console()],
     });
