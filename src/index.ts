@@ -67,3 +67,7 @@ export * from './middleware/utils/http-response.module'
 // Response Handler Exports
 export * from './middleware/response-handler/response-handler.interceptor'
 export * from './middleware/response-handler/response-handler.module'
+
+// TCP Handler Exports
+export * from './core-common/tcp-handler/tcp-handler.interface'
+export * from './core-common/tcp-handler/tcp-listener.service'
