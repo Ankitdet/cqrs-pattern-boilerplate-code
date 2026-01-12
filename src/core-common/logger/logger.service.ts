@@ -1,5 +1,8 @@
-import winston, { Logger } from "winston";
+import { Inject, Injectable } from "@nestjs/common";
 import stripAnsi from "strip-ansi";
+import winston, { Logger } from "winston";
+import { LOGGER_OPTIONS } from "./logger.constants";
+import { LoggerModuleOptions } from "./logger.interface";
 /* ---------------------------------- Types --------------------------------- */
 
 enum SeverityText {
@@ -22,17 +25,20 @@ export type OrgContext = {
 
 /* --------------------------------- Service -------------------------------- */
 
+@Injectable()
 export class LoggerService {
   private readonly logger: Logger;
   private readonly deploymentEnv: string;
   private readonly hostImageVersion: string;
   private readonly otelAgentHost: string;
 
-  constructor(logLevel: string = "debug") {
-    this.deploymentEnv = "rls-dev";
-    this.hostImageVersion = process.env.SERVICE_VERSION ?? "202501.1";
-    this.otelAgentHost = process.env.OTEL_AGENT_HOST ?? "10.0.0.1";
-    this.logger = this.createLogger(logLevel);
+  constructor(
+    @Inject(LOGGER_OPTIONS) readonly options: LoggerModuleOptions
+  ) {
+    this.deploymentEnv = options.deploymentEnv ?? "rls-dev";
+    this.hostImageVersion = options.serviceVersion ?? "202501.1";
+    this.otelAgentHost = options.otelAgentHost ?? "10.0.0.1";
+    this.logger = this.createLogger(options.level ?? "info");
     this.overrideConsole();
   }
 
@@ -61,7 +67,7 @@ export class LoggerService {
     severity: SeverityText,
     message: string,
     metadata: LogMetadata = {},
-    error?: Error,
+    error?: Error
   ) {
     const body = {
       SeverityText: severity,
@@ -112,8 +118,8 @@ export class LoggerService {
   private cleanMeta(meta: Record<string, unknown>) {
     return Object.fromEntries(
       Object.entries(meta).filter(
-        ([_, value]) => value !== undefined && value !== "None",
-      ),
+        ([_, value]) => value !== undefined && value !== "None"
+      )
     );
   }
 
@@ -159,7 +165,7 @@ export class LoggerService {
     return patterns.reduce((msg, { regex, visible, name }) => {
       return msg.replace(
         regex,
-        (m) => `${m.slice(0, visible)}...[REDACTED_${name}]`,
+        (m) => `${m.slice(0, visible)}...[REDACTED_${name}]`
       );
     }, message);
   }

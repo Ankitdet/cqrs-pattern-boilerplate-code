@@ -24,6 +24,7 @@ export * from './core-common/result-model/result'
 export * from './core-common/logger/logger.interface'
 export * from './core-common/logger/logger.module'
 export * from './core-common/logger/logger.service'
+export * from './core-common/logger/logger.constants'
 
 // Module Exports
 export * from './common-infra/common-infra.module'
