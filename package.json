@@ -1,6 +1,6 @@
 {
   "name": "cqrs-boilerplate-common",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Cqrs boilerplate common library",
   "private": false,
   "license": "MIT",

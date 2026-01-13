@@ -25,7 +25,7 @@ export class TcpListenerService<T> implements OnModuleInit, OnModuleDestroy {
           this.handler.handle(message, socket);
         } catch (err) {
           console.error("❌ TCP processing error:", err.message);
-          Result.throwError(
+          return Result.failed(
             new GenericError("TCP processing error", err.message)
           );
         }
@@ -36,10 +36,8 @@ export class TcpListenerService<T> implements OnModuleInit, OnModuleDestroy {
       });
 
       socket.on("error", (err) => {
-        console.error("Socket error:", err.message);
-        Result.throwError(
-          new GenericError("Socket error", err.message)
-        );
+        console.error("Socket error:", JSON.stringify(err.stack));
+        return Result.failed(new GenericError("Socket error", err.message));
       });
     });
 
