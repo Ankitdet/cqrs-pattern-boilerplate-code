@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import stripAnsi from "strip-ansi";
 import winston, { Logger } from "winston";
 import { LOGGER_OPTIONS } from "./logger.constants";
 import { LoggerModuleOptions } from "./logger.interface";
+
 /* ---------------------------------- Types --------------------------------- */
 
 enum SeverityText {
@@ -31,6 +31,7 @@ export class LoggerService {
   private readonly deploymentEnv: string;
   private readonly hostImageVersion: string;
   private readonly otelAgentHost: string;
+  private stripAnsi: (text: string) => string;
 
   constructor(
     @Inject(LOGGER_OPTIONS) readonly options: LoggerModuleOptions
@@ -39,7 +40,13 @@ export class LoggerService {
     this.hostImageVersion = options.serviceVersion ?? "202501.1";
     this.otelAgentHost = options.otelAgentHost ?? "10.0.0.1";
     this.logger = this.createLogger(options.level ?? "info");
+    this.initStripAnsi();
     this.overrideConsole();
+  }
+
+  private async initStripAnsi() {
+    const module = await import("strip-ansi");
+    this.stripAnsi = module.default;
   }
 
   /* ------------------------------- Public API ------------------------------- */
@@ -91,7 +98,7 @@ export class LoggerService {
         winston.format.json(),
         winston.format.printf(({ level, message, timestamp, ...meta }) =>
           JSON.stringify({
-            message: stripAnsi(this.safeStringify(message)),
+            message: this.stripAnsiSafe(this.safeStringify(message)),
             attributes: this.buildAttributes(level),
             timestamp: timestamp,
             ...this.cleanMeta(meta),
@@ -100,6 +107,10 @@ export class LoggerService {
       ),
       transports: [new winston.transports.Console()],
     });
+  }
+
+  private stripAnsiSafe(text: string): string {
+    return this.stripAnsi ? this.stripAnsi(text) : text;
   }
 
   /* ------------------------------- Context -------------------------------- */
